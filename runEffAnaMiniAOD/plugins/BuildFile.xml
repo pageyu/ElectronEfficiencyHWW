@@ -1,0 +1,27 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/Utilities"/>
+<use name="FWCore/ServiceRegistry"/>
+<use name="FWCore/Services"/>
+<use name="DataFormats/Common"/>
+<use name="DataFormats/VertexReco"/>
+<use name="DataFormats/BeamSpot"/>
+<use name="DataFormats/EgammaCandidates"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="DataFormats/HepMCCandidate"/>
+<use name="PhysicsTools/UtilAlgos"/>
+<use name="PhysicsTools/Utilities"/>
+<use name="UserCode/llvv_fwk"/>
+<use name="RecoJets/JetProducers"/>
+<use name="RecoEcal/EgammaCoreTools"/>
+<use name="RecoEgamma/EgammaTools"/>
+<use name="RecoEgamma/ElectronIdentification"/>
+<use name="EgammaAnalysis/ElectronTools"/>
+<use name="SimDataFormats/GeneratorProducts"/>
+<use name="CondFormats/JetMETObjects"/>
+<library file="MyPatElectronMVAIdSelector.cc" name="MyPatElectronMVAIdSelector">
+</library>
+<library file="runEffAnaMiniAOD6wps.cc" name="runEffAnaMiniAOD">
+</library>
+<flags EDM_PLUGIN="1"/>
