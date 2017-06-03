@@ -12,7 +12,7 @@
 <use name="DataFormats/HepMCCandidate"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/Utilities"/>
-<use name="UserCode/llvv_fwk"/>
+<use name="EleEfficiencyHWW/runEffAnaMiniAOD"/>
 <use name="RecoJets/JetProducers"/>
 <use name="RecoEcal/EgammaCoreTools"/>
 <use name="RecoEgamma/EgammaTools"/>

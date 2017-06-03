@@ -60,18 +60,18 @@
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 //#include "TauAnalysis/SVfitStandalone/interface/SVfitStandaloneAlgorithm.h" //for svfit
 
-#include "UserCode/llvv_fwk/interface/MacroUtils.h"
+//#include "UserCode/llvv_fwk/interface/MacroUtils.h"
 //#include "UserCode/llvv_fwk/interface/HiggsUtils.h"
-#include "UserCode/llvv_fwk/interface/SmartSelectionMonitor.h"
-#include "UserCode/llvv_fwk/interface/TMVAUtils.h"
-#include "UserCode/llvv_fwk/interface/LeptonEfficiencySF.h"
-#include "UserCode/llvv_fwk/interface/PDFInfo.h"
-#include "UserCode/llvv_fwk/interface/MuScleFitCorrector.h"
-#include "UserCode/llvv_fwk/interface/GammaWeightsHandler.h"
-#include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
+//#include "UserCode/llvv_fwk/interface/SmartSelectionMonitor.h"
+//#include "UserCode/llvv_fwk/interface/TMVAUtils.h"
+//#include "UserCode/llvv_fwk/interface/LeptonEfficiencySF.h"
+//#include "UserCode/llvv_fwk/interface/PDFInfo.h"
+//#include "UserCode/llvv_fwk/interface/MuScleFitCorrector.h"
+//#include "UserCode/llvv_fwk/interface/GammaWeightsHandler.h"
+//#include "UserCode/llvv_fwk/interface/BtagUncertaintyComputer.h"
 
-#include "UserCode/llvv_fwk/interface/PatUtils.h"
-#include "UserCode/llvv_fwk/interface/LumiUtils.h"
+#include "EleEfficiencyHWW/runEffAnaMiniAOD/interface/PatUtils.h"
+//#include "UserCode/llvv_fwk/interface/LumiUtils.h"
 
 //L1 EM particles
 #include "DataFormats/L1Trigger/interface/L1EmParticle.h"
