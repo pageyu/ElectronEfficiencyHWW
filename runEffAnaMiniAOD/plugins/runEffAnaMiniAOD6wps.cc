@@ -183,18 +183,20 @@ class runEffAnaMiniAOD : public edm::one::EDAnalyzer<edm::one::SharedResources>
       double tagPT;
       double tagEta;
       double tagPhi;
+      double tagLoose;
+      double tagCB;
+      double tagCBTriChg;
       double tagMVA80Iso15;
       double tagMVA80Iso16;
       double tagMVA90Iso15;
       double tagMVA90Iso16;
-      double tagCB;
-      double tagCBTriChg;
+      double probeLoose;
+      double probeCB;  
+      double probeCBTriChg;  
       double probeMVA80Iso15;
       double probeMVA80Iso16;
       double probeMVA90Iso15;
       double probeMVA90Iso16;
-      double probeCB;  
-      double probeCBTriChg;  
       double probePT;
       double probeEta;
       double probePhi;
@@ -222,18 +224,20 @@ class runEffAnaMiniAOD : public edm::one::EDAnalyzer<edm::one::SharedResources>
 
       TBranch *b_Nvtx                ;
       TBranch *b_ZMass               ;
+      TBranch *b_tagLoose               ;
+      TBranch *b_tagCB               ;
+      TBranch *b_tagCBTriChg             ;
       TBranch *b_tagMVA80Iso15       ;
       TBranch *b_tagMVA80Iso16       ;
       TBranch *b_tagMVA90Iso15       ;
       TBranch *b_tagMVA90Iso16       ;
-      TBranch *b_tagCB               ;
-      TBranch *b_tagCBTriChg             ;
+      TBranch *b_probeLoose             ;
+      TBranch *b_probeCB             ;
+      TBranch *b_probeCBTriChg             ;
       TBranch *b_probeMVA80Iso15       ;
       TBranch *b_probeMVA80Iso16       ;
       TBranch *b_probeMVA90Iso15       ;
       TBranch *b_probeMVA90Iso16       ;
-      TBranch *b_probeCB             ;
-      TBranch *b_probeCBTriChg             ;
       TBranch *b_tagPT               ;
       TBranch *b_tagEta              ;
       TBranch *b_tagPhi              ;
@@ -453,6 +457,7 @@ runEffAnaMiniAOD::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     /// ELE TAG ///
     //Logical tag for Tag and Probe Ele
     bool passTagEleKin(false)    , passProbeEleKin(false);
+    bool TagLoose(false)    , ProbeLoose(false);
     bool TagTightIdSTD(false)    , ProbeTightIdSTD(false);
     bool TagTightIdTriChgSTD(false)    , ProbeTightIdTriChgSTD(false);
     bool Tag80XMVAwp80Iso15(false) , Probe80XMVAwp80Iso15(false);
@@ -542,11 +547,12 @@ runEffAnaMiniAOD::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
         // FIX ME!
         passTagEleKin = (((abs(etaf) >= 0 && abs(etaf) <= 1.4442) || (abs(etaf) >= 1.5660 && abs(etaf) <= 2.5)) && ptf > 35);
-
-        TagTightIdSTD   = (*tight_id_decisions)[electronsHandle->ptrAt(first)];
-        ProbeTightIdSTD = (*tight_id_decisions)[electronsHandle->ptrAt(second)];
-        TagTightIdTriChgSTD   = (*tight_id_decisions)[electronsHandle->ptrAt(first)] && electronMVATightIdExtra.passTriChg(selLeptons[first].el);
-        ProbeTightIdTriChgSTD = (*tight_id_decisions)[electronsHandle->ptrAt(second)] && electronMVATightIdExtra.passTriChg(selLeptons[second].el);
+        TagLoose   =  electronMVATightIdExtra.passId(selLeptons[first].el);
+        ProbeLoose =  electronMVATightIdExtra.passId(selLeptons[second].el);
+        TagTightIdSTD   = (*tight_id_decisions)[electronsHandle->ptrAt(first)] && electronMVATightIdExtra.passId(selLeptons[first].el);
+        ProbeTightIdSTD = (*tight_id_decisions)[electronsHandle->ptrAt(second)] && electronMVATightIdExtra.passId(selLeptons[second].el);
+        TagTightIdTriChgSTD   = (*tight_id_decisions)[electronsHandle->ptrAt(first)]  && electronMVATightIdExtra.passTriChg(selLeptons[first].el) && electronMVATightIdExtra.passId(selLeptons[first].el);
+        ProbeTightIdTriChgSTD = (*tight_id_decisions)[electronsHandle->ptrAt(second)] && electronMVATightIdExtra.passTriChg(selLeptons[second].el) && electronMVATightIdExtra.passId(selLeptons[second].el);
         Tag80XMVAwp80Iso15    = (*mva_tight_id_decisions)[electronsHandle->ptrAt(first)]   && electronMVATightIdExtra.passId(selLeptons[first].el ) && electronMVATightIdExtra.passIso(selLeptons[first].el ,15);
         Probe80XMVAwp80Iso15  = (*mva_tight_id_decisions)[electronsHandle->ptrAt(second)]  && electronMVATightIdExtra.passId(selLeptons[second].el) && electronMVATightIdExtra.passIso(selLeptons[second].el,15);
         Tag80XMVAwp80Iso16    = (*mva_loose_id_decisions)[electronsHandle->ptrAt(first)]   && electronMVATightIdExtra.passId(selLeptons[first].el ) && electronMVATightIdExtra.passIso(selLeptons[first].el ,15);
@@ -564,6 +570,9 @@ runEffAnaMiniAOD::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             passTagdRCut = true;
         }
 
+        if (passTagEleKin && TagLoose && passTagdRCut){
+            TagLoose = true;
+        }
         if (passTagEleKin && TagTightIdSTD && passTagdRCut){
             TagTightIdSTD = true;
         }
@@ -583,7 +592,7 @@ runEffAnaMiniAOD::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             Tag80XMVAwp90Iso16 = true;
         }
 
-        TagEle = Tag80XMVAwp80Iso15 || Tag80XMVAwp80Iso16 || Tag80XMVAwp90Iso15 || Tag80XMVAwp90Iso16 || TagTightIdSTD || TagTightIdTriChgSTD;
+        TagEle = TagLoose || Tag80XMVAwp80Iso15 || Tag80XMVAwp80Iso16 || Tag80XMVAwp90Iso15 || Tag80XMVAwp90Iso16 || TagTightIdSTD || TagTightIdTriChgSTD;
         if (!TagEle){
             return;
         }
@@ -597,10 +606,15 @@ runEffAnaMiniAOD::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         tagMVA90Iso16 = Tag80XMVAwp90Iso16;
         tagCB  = TagTightIdSTD;
         tagCBTriChg = TagTightIdTriChgSTD;
+        tagLoose  = TagLoose;
 
         //Selection of the Probe
         bool ProbeEle = false;
         passProbeEleKin = ((abs(etas) >= 0 && abs(etas) <= 2.5) && pts > 0);    //Fix it       
+        if ((ProbeLoose && passProbeEleKin )){
+            ProbeLoose = true;
+        }
+
         if ((ProbeTightIdSTD && passProbeEleKin )){
             ProbeTightIdSTD = true;
         }
@@ -620,14 +634,14 @@ runEffAnaMiniAOD::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             Probe80XMVAwp90Iso16 = true;
         }
 
-        //ProbeEle = ProbeTightMVAIdSTD || ProbeTightIdSTD;
-        ProbeEle = Probe80XMVAwp80Iso15 || Probe80XMVAwp80Iso16 || Probe80XMVAwp90Iso15 || Probe80XMVAwp90Iso16 || ProbeTightIdSTD || ProbeTightIdTriChgSTD;
+        ProbeEle = ProbeLoose || Probe80XMVAwp80Iso15 || Probe80XMVAwp80Iso16 || Probe80XMVAwp90Iso15 || Probe80XMVAwp90Iso16 || ProbeTightIdSTD || ProbeTightIdTriChgSTD;
         probeMVA80Iso15 = Probe80XMVAwp80Iso15;
         probeMVA80Iso16 = Probe80XMVAwp80Iso16;
         probeMVA90Iso15 = Probe80XMVAwp90Iso15;
         probeMVA90Iso16 = Probe80XMVAwp90Iso16;
         probeCB  = ProbeTightIdSTD;
         probeCBTriChg = ProbeTightIdTriChgSTD;
+        probeLoose = ProbeLoose;
 
         TLorentzVector lep1(selLeptons[first].px(),
                             selLeptons[first].py(),
@@ -733,18 +747,20 @@ ntuple = fs->make<TTree>("ntuple", "Efficiency Tree");
 
 b_Nvtx                = ntuple->Branch("Nvtx"              , &Nvtx              , "Nvtx/D");
 b_ZMass               = ntuple->Branch("ZMass"             , &ZMass             , "ZMass/D");
+b_tagLoose               = ntuple->Branch("tagLoose"             ,&tagLoose              , "tagLoose/D");
+b_tagCB               = ntuple->Branch("tagCB"             ,&tagCB              , "tagCB/D");
+b_tagCBTriChg               = ntuple->Branch("tagCBTriChg"             ,&tagCBTriChg              , "tagCBTriChg/D");
 b_tagMVA80Iso15              = ntuple->Branch("tagMVA80Iso15"            ,&tagMVA80Iso15             , "tagMVA80Iso15/D");
 b_tagMVA80Iso16              = ntuple->Branch("tagMVA80Iso16"            ,&tagMVA80Iso16             , "tagMVA80Iso16/D");
 b_tagMVA90Iso15              = ntuple->Branch("tagMVA90Iso15"            ,&tagMVA90Iso15             , "tagMVA90Iso15/D");
 b_tagMVA90Iso16              = ntuple->Branch("tagMVA90Iso16"            ,&tagMVA90Iso16             , "tagMVA90Iso16/D");
-b_tagCB               = ntuple->Branch("tagCB"             ,&tagCB              , "tagCB/D");
-b_tagCBTriChg               = ntuple->Branch("tagCBTriChg"             ,&tagCBTriChg              , "tagCBTriChg/D");
+b_probeLoose             = ntuple->Branch("probeLoose"           ,&probeLoose            , "probeLoose/D");
+b_probeCB             = ntuple->Branch("probeCB"           ,&probeCB            , "probeCB/D");
+b_probeCBTriChg             = ntuple->Branch("probeCBTriChg"           ,&probeCBTriChg            , "probeCBTriChg/D");
 b_probeMVA80Iso15            = ntuple->Branch("probeMVA80Iso15"          ,&probeMVA80Iso15           , "probeMVA80Iso15/D");
 b_probeMVA80Iso16            = ntuple->Branch("probeMVA80Iso16"          ,&probeMVA80Iso16           , "probeMVA80Iso16/D");
 b_probeMVA90Iso15            = ntuple->Branch("probeMVA90Iso15"          ,&probeMVA90Iso15           , "probeMVA90Iso15/D");
 b_probeMVA90Iso16            = ntuple->Branch("probeMVA90Iso16"          ,&probeMVA90Iso16           , "probeMVA90Iso16/D");
-b_probeCB             = ntuple->Branch("probeCB"           ,&probeCB            , "probeCB/D");
-b_probeCBTriChg             = ntuple->Branch("probeCBTriChg"           ,&probeCBTriChg            , "probeCBTriChg/D");
 b_tagPT               = ntuple->Branch("tagPT"             , &tagPT             , "tagPT/D");
 b_tagEta              = ntuple->Branch("tagEta"            , &tagEta            , "tagEta/D");
 b_tagPhi              = ntuple->Branch("tagPhi"            , &tagPhi            , "tagPhi/D");

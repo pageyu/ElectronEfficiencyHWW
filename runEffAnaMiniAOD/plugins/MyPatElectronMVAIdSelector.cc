@@ -27,6 +27,8 @@ public:
     bool passIso      (const pat::Electron& , int IsoVer);
     bool passHLTId (const edm::Ptr<const pat::Electron>);
     bool passHLTId (const pat::Electron&);
+    bool passLoose (const edm::Ptr<const pat::Electron>);
+    bool passLoose (const pat::Electron&);
 
 private:
     /* data */
@@ -61,6 +63,7 @@ private:
     // functions
     void initEle_(const pat::Electron&);
     bool passHLTId_();
+    bool passLoose_();
     bool passId_();
     bool passIso_(int IsoVer);
 
@@ -122,17 +125,33 @@ void MyPatElectronMVAIdSelector::setRho(double rho){
 }
 
 bool MyPatElectronMVAIdSelector::passId_(){
-    if( /*MVAId cut*/
+    if( /*Loose cut*/
         abs(etaElec) < 2.5
+        && trkPFIso/ptElec < 0.08
         &&((abs(etaElec) <= 1.479
-        //&& isolation < 0.571 //Iso16
-        //&& isolation < 0.0354 //Iso15
-        //&& (*mvaTightIdDecision)[elPtr] == 1
+        &&( hOverE < 0.060        
+        && full5x5sigmaIetaIeta < 0.011
+        && abs(dEtaSeed)  < 0.004         
+        && abs(dPhiIn) < 0.020               
+        && abs(ooEmooP) < 0.013                
+        && (ecalPFIso - jetRho * 0.165)/ptElec < 0.160
+        && (hcalPFIso - jetRho * 0.060)/ptElec < 0.120
+        && abs(dz)      < 0.1
+        && abs(d0)< 0.05         
+        && passConversionVeto   
+        && expectedMissingInnerHits< 1 ) 
         )||(abs(etaElec) > 1.479 && abs(etaElec) < 2.5
-        //&& isolation < 0.588 //Iso16
-        //&& isolation < 0.0646 //Iso15
-        //&& (*mvaTightIdDecision)[elPtr] == 1
-        ))){
+        && (hOverE              < 0.06           
+        && full5x5sigmaIetaIeta    < 0.031      
+        && abs(ooEmooP) < 0.013                    
+        && (ecalPFIso -jetRho * 0.132)/ptElec < 0.120 
+        && (hcalPFIso -jetRho * 0.131)/ptElec < 0.120  
+        && abs(chisq) < 3      
+        && abs(dz)      < 0.2            
+        && abs(d0)< 0.1            
+        && passConversionVeto     
+        && expectedMissingInnerHits<1 
+        )))){
         return true;
     }else{   
         return false;
@@ -213,6 +232,39 @@ bool MyPatElectronMVAIdSelector::passHLTId_(){
     }        
 }
 
+bool MyPatElectronMVAIdSelector::passLoose_(){
+    if(/*loose cut*/
+        abs(etaElec) < 2.5
+        && trkPFIso/ptElec < 0.08
+        &&(((abs(etaElec) <= 1.479)
+        &&( hOverE < 0.060        
+        && full5x5sigmaIetaIeta < 0.011
+        && abs(dEtaSeed)  < 0.004         
+        && abs(dPhiIn) < 0.020               
+        && abs(ooEmooP) < 0.013                
+        && (ecalPFIso - jetRho * 0.165)/ptElec < 0.160
+        && (hcalPFIso - jetRho * 0.060)/ptElec < 0.120
+        && abs(dz)      < 0.1
+        && abs(d0)< 0.05         
+        && passConversionVeto   
+        && expectedMissingInnerHits< 1  
+        ))||((abs(etaElec) > 1.479 && abs(etaElec) < 2.5)
+        && (hOverE              < 0.065           
+        && full5x5sigmaIetaIeta    < 0.031      
+        && abs(ooEmooP) < 0.013                    
+        && (ecalPFIso -jetRho * 0.132)/ptElec < 0.120 
+        && (hcalPFIso -jetRho * 0.131)/ptElec < 0.120  
+        && abs(chisq) < 3      
+        && abs(dz)      < 0.2            
+        && abs(d0)< 0.1            
+        && passConversionVeto     
+        && expectedMissingInnerHits<1 
+        )))){
+        return true;
+    }else{   
+        return false;
+    }        
+}
 bool MyPatElectronMVAIdSelector::passHLTId(const pat::Electron &el){
     initEle_(el);
     return passHLTId_();
@@ -221,5 +273,14 @@ bool MyPatElectronMVAIdSelector::passHLTId(const pat::Electron &el){
 bool MyPatElectronMVAIdSelector::passHLTId(const edm::Ptr<const pat::Electron> elPtr){
     initEle_(*elPtr);
     return passHLTId_();
+}
+bool MyPatElectronMVAIdSelector::passLoose(const pat::Electron &el){
+    initEle_(el);
+    return passLoose_();
+}
+
+bool MyPatElectronMVAIdSelector::passLoose(const edm::Ptr<const pat::Electron> elPtr){
+    initEle_(*elPtr);
+    return passLoose_();
 }
 
